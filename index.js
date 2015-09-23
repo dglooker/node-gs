@@ -113,8 +113,9 @@ gs.prototype.safer = function() {
 gs.prototype.exec = function(cb) {
 	var self = this;
 	if (!this._input) return cb.call(self, 'No input specified');
-
-	var proc = spawn('gs', this.options.concat([this._input]));
+  var files = [].concat(this._input);
+	var proc = spawn('gs', this.options.concat(files));
+	//var proc = spawn('gs', this.options.concat([this._input]));
 	proc.stdin.on('error', cb);
 	proc.stdout.on('error', cb);
 
