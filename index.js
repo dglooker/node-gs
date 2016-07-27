@@ -67,6 +67,19 @@ gs.prototype.output = function(file) {
 	return this;
 };
 
+gs.prototype.include = function(path) {
+	if (path == undefined) {
+		throw new Error('Include path is not specified');
+	}
+
+	if (Array.isArray(path)) {
+		path = path.join(':');
+	}
+
+	this.options = this.options.concat(['-I', path]);
+	return this;
+}
+
 gs.prototype.quiet = function() {
 	this.options.push('-q');
 	return this;
@@ -99,8 +112,7 @@ gs.prototype.reset = function() {
 };
 
 gs.prototype.safer = function() {
-	this.options.push('-dSAFER');
-	return this;
+	return this.define('SAFER');
 };
 
 gs.prototype.exec = function(cb) {
@@ -113,6 +125,10 @@ gs.prototype.exec = function(cb) {
 
 	var _data = [];
 	var totalBytes = 0;
+
+	proc.stderr.on('data', function(data) {
+		cb(data.toString());
+	});
 
 	proc.stdout.on('data', function(data) {
 		totalBytes += data.length;
