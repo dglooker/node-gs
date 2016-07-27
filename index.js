@@ -16,33 +16,27 @@ function gs(inputFile) {
 gs.prototype.__proto__ = EventEmitter.prototype;
 
 gs.prototype.batch = function() {
-	this.options.push('-dBATCH');
-	return this;
+	return this.define('BATCH');
 };
 
 gs.prototype.diskfonts = function() {
-	this.options.push('-dDISKFONTS');
-	return this;
+	return this.define('DISKFONTS');
 };
 
 gs.prototype.nobind = function() {
-	this.options.push('-dNOBIND');
-	return this;
+	return this.define('NOBIND');
 };
 
 gs.prototype.nocache = function() {
-	this.options.push('-dNOCACHE');
-	return this;
+	return this.define('NOCACHE');
 };
 
 gs.prototype.nodisplay = function() {
-	this.options.push('-dNODISPLAY');
-	return this;
+	return this.define('NODISPLAY');
 };
 
 gs.prototype.nopause = function() {
-	this.options.push('-dNOPAUSE');
-	return this;
+	return this.define('NOPAUSE');
 };
 
 gs.prototype.command = function(cmd) {
@@ -169,4 +163,3 @@ gs.prototype.pagecount = function(cb) {
 			return cb.call(self, null, data);
 		});
 };
-
