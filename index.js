@@ -3,14 +3,14 @@ var spawn = require('child_process').spawn,
 
 module.exports = exports = create;
 
-function create() {
-	var _gs = new gs();
+function create(inputFile) {
+	var _gs = new gs(inputFile);
 	return _gs;
 }
 
-function gs() {
+function gs(inputFile) {
 	this.options = [];
-	this._input = null;
+	this._input = inputFile;
 }
 
 gs.prototype.__proto__ = EventEmitter.prototype;
