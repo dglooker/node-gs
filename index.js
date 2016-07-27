@@ -44,15 +44,15 @@ gs.prototype.command = function(cmd) {
 	return this;
 };
 
-gs.prototype.define = function(key, val) {
-	this.options.push('-d' + key + (val ? '=' + val : ''));
+gs.prototype.define = function(key, val, mod) {
+	mod = mod || 'd';
+	this.options.push('-' + mod + key + (val ? '=' + val : ''));
 	return this;
 };
 
 gs.prototype.device = function(dev) {
 	dev = dev || 'txtwrite';
-	this.options.push('-sDEVICE=' + dev);
-	return this;
+	return this.define('DEVICE', dev, 's');
 };
 
 gs.prototype.input = function(file) {
@@ -82,8 +82,7 @@ gs.prototype.currentDirectory = function() {
 gs.prototype.p = gs.prototype.currentDirectory;
 
 gs.prototype.papersize = function(size) {
-	this.options.push('-sPAPERSIZE=' + size);
-	return this;
+	return this.define('PAPERSIZE', size, 's');
 };
 
 gs.prototype.resolution = function(xres, yres) {
