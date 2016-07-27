@@ -1,7 +1,7 @@
 gs
-=====
+==
 
-[![Build Status](https://secure.travis-ci.org/ncb000gt/node-gs.png)](http://travis-ci.org/#!/ncb000gt/node-gs)
+[![Build Status](https://travis-ci.org/spreecode/node-gs.svg?branch=master)](https://travis-ci.org/spreecode/node-gs)
 
 NodeJS wrapper for `gs`
 
@@ -9,18 +9,21 @@ NodeJS wrapper for `gs`
 Usage
 =====
 
+```javascript
     var gs = require('gs');
-    gs()
+
+    gs(inputFile)
+      .include(`${__dirname}/my-portable-ghostscript/share/ghostscript/9.19/Resource/Init/`)
       .batch()
-      .output()
-      .input(input)
+      .nopause()
+      .output(outputFile)
       .exec(function(err, data) {
         console.log(data.toString());
       });
-
+```
 
 API
-=====
+===
 
 * `batch`
 * `nopause`
@@ -31,6 +34,6 @@ API
 
 
 License
-=====
+=======
 
 MIT - http://ncb000gt.mit-license.org/
