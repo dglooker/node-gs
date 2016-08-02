@@ -10,6 +10,7 @@ function create(inputFile) {
 
 function gs(inputFile) {
 	this.options = [];
+	this._gsname = 'gs';
 	this._input = inputFile;
 }
 
@@ -115,11 +116,16 @@ gs.prototype.safer = function() {
 	return this.define('SAFER');
 };
 
+gs.prototype.gsname = function(filename) {
+	this._gsname = filename;
+	return this;
+}
+
 gs.prototype.exec = function(cb) {
 	var self = this;
 	if (!this._input) return cb.call(self, 'No input specified');
 
-	var proc = spawn('gs', this.options.concat([this._input]));
+	var proc = spawn(this._gsname, this.options.concat([this._input]));
 	proc.stdin.on('error', cb);
 	proc.stdout.on('error', cb);
 
