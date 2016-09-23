@@ -1,19 +1,15 @@
-gs
-==
+# gs
 
 [![Build Status](https://travis-ci.org/spreecode/node-gs.svg?branch=master)](https://travis-ci.org/spreecode/node-gs)
 
 NodeJS wrapper for `gs`
 
-
-Usage
-=====
+# Usage
 
 ```javascript
     var gs = require('gs');
 
     gs(inputFile)
-      .include(`${__dirname}/my-portable-ghostscript/share/ghostscript/9.19/Resource/Init/`)
       .batch()
       .nopause()
       .output(outputFile)
@@ -22,9 +18,9 @@ Usage
       });
 ```
 
-API
-===
+# API
 
+* `include` - set path to `gs_init.ps` file (portable Ghostscript)
 * `batch`
 * `nopause`
 * `device` - device - defaults to `txtwrite`
@@ -32,8 +28,21 @@ API
 * `input` - file
 * `exec` - callback
 
+## Events
 
-License
-=======
+* `data (text)`
+* `page (currentPage)`
+* `pages (firstPage, lastPage)`
+
+```javascript
+    gs(inputFile)
+      .output(outputFile)
+      .on('page', function(page) { console.debug('processing page:', page); })
+      .exec(function(err, data) {
+        console.log(data.toString());
+      });
+```
+
+# License
 
 MIT - http://ncb000gt.mit-license.org/

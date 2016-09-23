@@ -1,5 +1,5 @@
-var spawn = require('child_process').spawn,
-	EventEmitter = require('events').EventEmitter;
+var {spawn} = require('child_process'),
+	{EventEmitter} = require('events');
 
 module.exports = exports = create;
 
@@ -141,7 +141,7 @@ gs.prototype.exec = function(cb) {
 		_data.push(data);
 		var str = data.toString();
 
-		self.emit('data', data.toString());
+		self.emit('data', str);
 
 		if ( str.match(/Processing pages (.*) through (.*)\./) ) {
 			self.emit('pages', RegExp.$1, RegExp.$2);
