@@ -17,6 +17,28 @@ describe('gs', function() {
 		});
 	});
 
+	describe('#include', function() {
+		it('should raise an error for null include path', function(done) {
+			assert.throws(function() { gs().include(); }, Error);
+			done();
+		});
+
+		it('should set include option', function(done) {
+			const input = '/opt/my app/Init';
+			const good = ['-I', '/opt/my app/Init'];
+
+			assert.deepEqual(gs().include(input).options, good);
+			done();
+		});
+		it('should set array of include paths', function(done) {
+			const input = ['/opt/my app/Init', '/tmp', '.'];
+			const good = ['-I', '/opt/my app/Init:/tmp:.'];
+
+			assert.deepEqual(gs().include(input).options, good);
+			done();
+		});
+	});
+
 	describe('#device', function() {
 		it('should set device option with default', function(done) {
 			assert.deepEqual(gs().device().options, ['-sDEVICE=txtwrite']);

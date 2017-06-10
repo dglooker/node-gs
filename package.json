@@ -3,12 +3,16 @@
   "description": "Provide access to ghostscript",
   "version": "0.0.2",
   "author": "Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
+  "contributors": [
+    "Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
+    "Leonid Suprun <leonid@suprun.pw> (http://github.com/devsli)"
+  ],
   "bugs" : {
-    "url" : "http://github.com/ncb000gt/node-gs/issues"
+    "url" : "http://github.com/spreecode/node-gs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/ncb000gt/node-gs.git"
+    "url": "http://github.com/spreecode/node-gs.git"
   },
   "scripts": {
     "test": "make test"
@@ -19,7 +23,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php" 
+      "url": "http://www.opensource.org/licenses/mit-license.php"
     }
   ],
   "contributors": [

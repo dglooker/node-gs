@@ -1,48 +1,43 @@
-var spawn = require('child_process').spawn,
-	EventEmitter = require('events').EventEmitter;
+var {spawn} = require('child_process'),
+	{EventEmitter} = require('events');
 
 module.exports = exports = create;
 
-function create() {
-	var _gs = new gs();
+function create(inputFile) {
+	var _gs = new gs(inputFile);
 	return _gs;
 }
 
-function gs() {
+function gs(inputFile) {
 	this.options = [];
-	this._input = null;
+	this._gsname = 'gs';
+	this._input = inputFile;
 }
 
 gs.prototype.__proto__ = EventEmitter.prototype;
 
 gs.prototype.batch = function() {
-	this.options.push('-dBATCH');
-	return this;
+	return this.define('BATCH');
 };
 
 gs.prototype.diskfonts = function() {
-	this.options.push('-dDISKFONTS');
-	return this;
+	return this.define('DISKFONTS');
 };
 
 gs.prototype.nobind = function() {
-	this.options.push('-dNOBIND');
-	return this;
+	return this.define('NOBIND');
 };
 
 gs.prototype.nocache = function() {
-	this.options.push('-dNOCACHE');
-	return this;
+	return this.define('NOCACHE');
 };
 
 gs.prototype.nodisplay = function() {
-	this.options.push('-dNODISPLAY');
-	return this;
+	return this.define('NODISPLAY');
 };
 
 gs.prototype.nopause = function() {
-	this.options.push('-dNOPAUSE');
-	return this;
+	return this.define('NOPAUSE');
 };
 
 gs.prototype.command = function(cmd) {
@@ -50,15 +45,15 @@ gs.prototype.command = function(cmd) {
 	return this;
 };
 
-gs.prototype.define = function(key, val) {
-	this.options.push('-d' + key + (val ? '=' + val : ''));
+gs.prototype.define = function(key, val, mod) {
+	mod = mod || 'd';
+	this.options.push('-' + mod + key + (val ? '=' + val : ''));
 	return this;
 };
 
 gs.prototype.device = function(dev) {
 	dev = dev || 'txtwrite';
-	this.options.push('-sDEVICE=' + dev);
-	return this;
+	return this.define('DEVICE', dev, 's');
 };
 
 gs.prototype.input = function(file) {
@@ -72,6 +67,19 @@ gs.prototype.output = function(file) {
 	if (file === '-') return this.q();
 	return this;
 };
+
+gs.prototype.include = function(path) {
+	if (path == undefined) {
+		throw new Error('Include path is not specified');
+	}
+
+	if (Array.isArray(path)) {
+		path = path.join(':');
+	}
+
+	this.options = this.options.concat(['-I', path]);
+	return this;
+}
 
 gs.prototype.quiet = function() {
 	this.options.push('-q');
@@ -88,8 +96,7 @@ gs.prototype.currentDirectory = function() {
 gs.prototype.p = gs.prototype.currentDirectory;
 
 gs.prototype.papersize = function(size) {
-	this.options.push('-sPAPERSIZE=' + size);
-	return this;
+	return this.define('PAPERSIZE', size, 's');
 };
 
 gs.prototype.resolution = function(xres, yres) {
@@ -106,9 +113,13 @@ gs.prototype.reset = function() {
 };
 
 gs.prototype.safer = function() {
-	this.options.push('-dSAFER');
-	return this;
+	return this.define('SAFER');
 };
+
+gs.prototype.gsname = function(filename) {
+	this._gsname = filename;
+	return this;
+}
 
 gs.prototype.exec = function(cb) {
 	var self = this;
@@ -122,12 +133,16 @@ gs.prototype.exec = function(cb) {
 	var _data = [];
 	var totalBytes = 0;
 
+	proc.stderr.on('data', function(data) {
+		cb(data.toString());
+	});
+
 	proc.stdout.on('data', function(data) {
 		totalBytes += data.length;
 		_data.push(data);
 		var str = data.toString();
 
-		self.emit('data', data.toString());
+		self.emit('data', str);
 
 		if ( str.match(/Processing pages (.*) through (.*)\./) ) {
 			self.emit('pages', RegExp.$1, RegExp.$2);
