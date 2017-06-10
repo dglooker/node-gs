@@ -1,22 +1,46 @@
-# gs
+node-gs
+=====
 
-[![Build Status](https://travis-ci.org/spreecode/node-gs.svg?branch=master)](https://travis-ci.org/spreecode/node-gs)
+NodeJS wrapper for `GhostScript` with the ability to set executable path in order to use with services like `AWS Lambda`.
 
-NodeJS wrapper for `gs`
+Installation
+=====
+`npm install https://github.com/sina-masnadi/node-gs/tarball/master`
 
-# Usage
+or
 
-```javascript
+    "dependencies": {
+        "gs": "https://github.com/sina-masnadi/node-gs/tarball/master"
+    }
+
+Usage
+=====
+To set the executable path you can use:
+`executablePath('ghostscript/bin/./gs')`
+
+A compiled version of GhostScript (v9.20) for AWS Lambda can be find here:
+https://github.com/sina-masnadi/lambda-ghostscript
+
+
+Sample usage:
+
     var gs = require('gs');
-
-    gs(inputFile)
-      .batch()
-      .nopause()
-      .output(outputFile)
-      .exec(function(err, data) {
-        console.log(data.toString());
-      });
-```
+    gs()
+        .batch()
+        .nopause()
+        .option('-r' + 50 * 2)
+        .option('-dDownScaleFactor=2')
+        .executablePath('ghostscript/bin/./gs')
+        .device('png16m')
+        .output('/tmp/' + fileName + '-%d.png')
+        .input('/tmp/' + fileName)
+        .exec(function (err, stdout, stderr) {
+            if (!err) {
+               // no error
+            } else {
+               // handle errors
+            }
+        });
 
 # API
 
@@ -25,14 +49,14 @@ NodeJS wrapper for `gs`
 * `nopause`
 * `device` - device - defaults to `txtwrite`
 * `output` - file - defaults to `-` which represents stdout
+* `option` - you can add any options that is not provided through the functions to the command
 * `input` - file
+* `executablePath` - path to the Ghostscript executable files (example: ghostscript/bin/./). This can be useful for Lambda functions.
 * `exec` - callback
 
 ## Events
 
-* `data (text)`
-* `page (currentPage)`
-* `pages (firstPage, lastPage)`
+# License
 
 ```javascript
     gs(inputFile)
