@@ -1,27 +1,26 @@
-gs
-=====
+# gs
 
-[![Build Status](https://secure.travis-ci.org/ncb000gt/node-gs.png)](http://travis-ci.org/#!/ncb000gt/node-gs)
+[![Build Status](https://travis-ci.org/spreecode/node-gs.svg?branch=master)](https://travis-ci.org/spreecode/node-gs)
 
 NodeJS wrapper for `gs`
 
+# Usage
 
-Usage
-=====
-
+```javascript
     var gs = require('gs');
-    gs()
+
+    gs(inputFile)
       .batch()
-      .output()
-      .input(input)
+      .nopause()
+      .output(outputFile)
       .exec(function(err, data) {
         console.log(data.toString());
       });
+```
 
+# API
 
-API
-=====
-
+* `include` - set path to `gs_init.ps` file (portable Ghostscript)
 * `batch`
 * `nopause`
 * `device` - device - defaults to `txtwrite`
@@ -29,8 +28,21 @@ API
 * `input` - file
 * `exec` - callback
 
+## Events
 
-License
-=====
+* `data (text)`
+* `page (currentPage)`
+* `pages (firstPage, lastPage)`
+
+```javascript
+    gs(inputFile)
+      .output(outputFile)
+      .on('page', function(page) { console.debug('processing page:', page); })
+      .exec(function(err, data) {
+        console.log(data.toString());
+      });
+```
+
+# License
 
 MIT - http://ncb000gt.mit-license.org/
