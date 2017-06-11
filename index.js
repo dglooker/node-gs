@@ -1,188 +1,236 @@
-var {spawn} = require('child_process'),
-	{EventEmitter} = require('events');
+var { spawn } = require( 'child_process' ),
+	{ EventEmitter } = require( 'events' );
 
-module.exports = exports = create;
+var gs = function gs ( inputFile ) {
+		this.options = [];
 
-function create(inputFile) {
-	var _gs = new gs(inputFile);
-	return _gs;
-}
+		return this.executablePath( '' ).input( inputFile );
+	},
 
-function gs(inputFile) {
-	this.options = [];
-	this._gsname = 'gs';
-	this._input = inputFile;
-}
+	create = function create ( inputFile ) {
+		return new gs( inputFile );
+	},
+
+	isFunction = function isFunction ( functionToCheck ) {
+		return ( !!functionToCheck && ( {}.toString.call( functionToCheck ) === '[object Function]' ) );
+	};
 
 gs.prototype.__proto__ = EventEmitter.prototype;
 
-gs.prototype.batch = function() {
-	return this.define('BATCH');
+gs.prototype.batch = function () {
+	return this.define( 'BATCH' );
 };
 
-gs.prototype.diskfonts = function() {
-	return this.define('DISKFONTS');
-};
+gs.prototype.command = function ( cmd ) {
+	this.options.push( '-c', cmd.replace( /(\s)/g, '\ ' ) );
 
-gs.prototype.nobind = function() {
-	return this.define('NOBIND');
-};
-
-gs.prototype.nocache = function() {
-	return this.define('NOCACHE');
-};
-
-gs.prototype.nodisplay = function() {
-	return this.define('NODISPLAY');
-};
-
-gs.prototype.nopause = function() {
-	return this.define('NOPAUSE');
-};
-
-gs.prototype.command = function(cmd) {
-	this.options.push('-c', cmd.replace(/(\s)/g,'\ '));
 	return this;
 };
 
-gs.prototype.define = function(key, val, mod) {
+gs.prototype.currentDirectory = function () {
+	this.define( '', '', 'p' );
+
+	return this;
+};
+
+gs.prototype.diskfonts = function () {
+	return this.define( 'DISKFONTS' );
+};
+
+gs.prototype.define = function ( key, val, mod ) {
 	mod = mod || 'd';
-	this.options.push('-' + mod + key + (val ? '=' + val : ''));
+
+	this.options.push( '-' + mod + key + ( val ? '=' + val : '' ) );
+
 	return this;
 };
 
-gs.prototype.device = function(dev) {
-	dev = dev || 'txtwrite';
-	return this.define('DEVICE', dev, 's');
+gs.prototype.device = function ( device ) {
+	device = device || 'txtwrite';
+
+	return this.define( 'DEVICE', device, 's' );
 };
 
-gs.prototype.input = function(file) {
-	this._input = file;
+gs.prototype.executablePath = function ( path ) {
+	this._executablePath = path;
+
 	return this;
 };
 
-gs.prototype.output = function(file) {
-	file = file || '-';
-	this.options.push('-sOutputFile=' + file);
-	if (file === '-') return this.q();
-	return this;
-};
+gs.prototype.include = function ( path ) {
+	if ( path == undefined ) throw new Error( 'Include path is not specified' );
 
-gs.prototype.include = function(path) {
-	if (path == undefined) {
-		throw new Error('Include path is not specified');
-	}
+	if ( Array.isArray( path ) ) path = path.join( ':' );
 
-	if (Array.isArray(path)) {
-		path = path.join(':');
-	}
+	this.options = this.options.concat( [ '-I', path ] );
 
-	this.options = this.options.concat(['-I', path]);
 	return this;
 }
 
-gs.prototype.quiet = function() {
-	this.options.push('-q');
+gs.prototype.input = function ( fileNameOrData ) {
+	this._input = fileNameOrData || '-';
+
 	return this;
 };
 
-gs.prototype.q = gs.prototype.quiet;
+gs.prototype.nobind = function () {
+	return this.define( 'NOBIND' );
+};
 
-gs.prototype.currentDirectory = function() {
-	this.options.push('-p');
+gs.prototype.nocache = function () {
+	return this.define( 'NOCACHE' );
+};
+
+gs.prototype.nodisplay = function () {
+	return this.define( 'NODISPLAY' );
+};
+
+gs.prototype.nopause = function () {
+	return this.define( 'NOPAUSE' );
+};
+
+gs.prototype.option = function ( option ) {
+	this.options.push( option );
+
+	return this;
+};
+
+gs.prototype.output = function ( file ) {
+	file = file || '-';
+
+	this.define( 'OutputFile', file, 's' );
+
+	if ( file === '-' ) return this.q();
+
 	return this;
 };
 
 gs.prototype.p = gs.prototype.currentDirectory;
 
-gs.prototype.papersize = function(size) {
-	return this.define('PAPERSIZE', size, 's');
+gs.prototype.page = function ( page ) {
+	return this.define( 'FirstPage', page ).define( 'LastPage', page );
 };
 
-gs.prototype.resolution = function(xres, yres) {
-	this.options.push('-r' + xres + (yres ? 'x' + yres : ''));
+gs.prototype.pagecount = function ( callback ) {
+	var self = this;
+
+	if ( !self._input || self._input === '-' ) return callback.call( self, 'No input specified' );
+
+	self.q()
+		.command( '(' + self._input + ') (r) file runpdfbegin pdfpagecount = quit' )
+		.exec( function ( error, data ) {
+			if ( error ) return callback.call( self, error );
+
+			return callback.call( self, null, data );
+		});
+};
+
+gs.prototype.pages = function ( from, to ) {
+	return this.define( 'FirstPage', from ).define( 'LastPage', to );
+};
+
+gs.prototype.papersize = function ( size ) {
+	return this.define( 'PAPERSIZE', size, 's' );
+};
+
+gs.prototype.quiet = function () {
+	this.define( '', '', 'q' );
+
+	return this;
+};
+
+gs.prototype.q = gs.prototype.quiet;
+
+gs.prototype.reset = function () {
+	this.options = [];
+
+	return this.executablePath( '' ).input();
+};
+
+gs.prototype.resolution = function ( xRes, yRes ) {
+	this.options.push( '-r' + xRes + ( yRes ? 'x' + yRes : '' ) );
+
 	return this;
 };
 
 gs.prototype.res = gs.prototype.r = gs.prototype.resolution;
 
-gs.prototype.reset = function() {
-	this.options = [];
-	this._input = null;
-	return this;
+gs.prototype.safer = function () {
+	return this.define( 'SAFER' );
 };
 
-gs.prototype.safer = function() {
-	return this.define('SAFER');
-};
+gs.prototype.exec = function ( inputData, callback ) {
+	var _callback = callback;
 
-gs.prototype.gsname = function(filename) {
-	this._gsname = filename;
-	return this;
-}
+	if ( _callback ) {
+		if ( !inputData ) return _callback.call( this, 'No input data specified' );
+	} else if ( isFunction( inputData ) ) {
+		_callback = inputData;
 
-gs.prototype.exec = function(cb) {
-	var self = this;
-	if (!this._input) return cb.call(self, 'No input specified');
-  var files = [].concat(this._input);
-	var proc = spawn('gs', this.options.concat(files));
-	//var proc = spawn('gs', this.options.concat([this._input]));
-	proc.stdin.on('error', cb);
-	proc.stdout.on('error', cb);
+		if ( this._input === '-' ) return _callback.call( this, 'No input data specified' );
+	} else {
+		throw new Error( this, 'No callback specified' );
+	}
 
-	var _data = [];
-	var totalBytes = 0;
+	var self = this,
+		executable = ( self._executablePath ) ? _executablePath : 'gs',
+		files = [].concat( self._input ),
+		args = this.options.concat( files ),
+		gsData = [],
+		totalBytes = 0,
+		proc;
 
-	proc.stderr.on('data', function(data) {
-		cb(data.toString());
-	});
-
-	proc.stdout.on('data', function(data) {
-		totalBytes += data.length;
-		_data.push(data);
-		var str = data.toString();
-
-		self.emit('data', str);
-
-		if ( str.match(/Processing pages (.*) through (.*)\./) ) {
-			self.emit('pages', RegExp.$1, RegExp.$2);
-		}
-
-		if ( str.match(/Page (.*)/) ) {
-			self.emit('page', RegExp.$1);
-		}
-	});
-
-	proc.on('close', function() {
-		var buf = Buffer.concat(_data, totalBytes);
-
-		cb.call(self, null, buf.toString());
-		return self.emit('close');
-	});
-
-	process.on('exit', function() {
-		proc.kill();
-		self.emit('exit');
-	});
-};
-
-gs.prototype.page = function(page) {
-	return this.define('FirstPage', page).define('LastPage', page);
-};
-
-gs.prototype.pages = function(from, to) {
-	return this.define('FirstPage', from).define('LastPage', to);
-};
-
-gs.prototype.pagecount = function(cb) {
-	var self = this;
-	if (!this._input) return cb.call(self, 'No input specified');
-
-	this.q()
-		.command('(' + this._input + ') (r) file runpdfbegin pdfpagecount = quit')
-		.exec(function(err, data){
-			if (err) return cb.call(self, err);
-			return cb.call(self, null, data);
+	if ( self._input === '-' ) {
+		proc = spawn( executable, args, {
+			stdio: [
+				'pipe'
+			]
 		});
+
+		proc.stdin.setEncoding( 'utf8' );
+
+		proc.stdin.write( inputData );
+
+		proc.stdin.end();
+	} else {
+		proc = spawn( executable, args );
+	}
+
+	proc.stdin.on( 'error', _callback );
+	proc.stdout.on( 'error', _callback );
+
+	proc.stderr.on( 'data', function ( data ) {
+		_callback( data.toString() );
+	});
+
+	proc.stdout.on( 'data', function ( data ) {
+		var dataString = data.toString(),
+			pageMatch = /Page (.*)/,
+			pagesMatch = /Processing pages (.*) through (.*)\./;
+
+		totalBytes += data.length;
+		gsData.push( data );
+
+		self.emit( 'data', data );
+
+		if ( dataString.match( pagesMatch ) ) self.emit( 'pages', RegExp.$1, RegExp.$2 );
+
+		if ( dataString.match( pageMatch ) ) self.emit( 'page', RegExp.$1 );
+	});
+
+	proc.on( 'close', function () {
+		var buffer = Buffer.concat( gsData, totalBytes );
+
+		_callback.call( self, null, buffer );
+
+		return self.emit( 'close' );
+	});
+
+	process.on( 'exit', function () {
+		proc.kill();
+
+		self.emit( 'exit' );
+	});
 };
 
+module.exports = exports = create;
