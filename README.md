@@ -1,21 +1,15 @@
-node-gs
+node-gs [![Build Status](https://travis-ci.org/MiroHibler/node-gs.svg?branch=master)](https://travis-ci.org/MiroHibler/node-gs)
 =====
 
 NodeJS wrapper for `gs` (GhostScript).
+
+Built upon [node-gs](https://github.com/ncb000gt/node-gs) by [Nick Campbell](https://github.com/ncb000gt) and [many others](https://github.com/ncb000gt/node-gs/network).
 
 Installation
 =====
 
 ```sh
-npm install https://github.com/MiroHibler/node-gs/tarball/master
-```
-
-or
-
-```javascript
-    "dependencies": {
-        "gs": "https://github.com/MiroHibler/node-gs/tarball/master"
-    }
+npm install --save node-gs
 ```
 
 Usage
@@ -24,7 +18,7 @@ Usage
 Sample usage:
 
 ```javascript
-    var gs = require( 'gs' );
+    var gs = require( 'node-gs' );
 
     gs()
         .batch()
@@ -45,10 +39,10 @@ Sample usage:
         });
 ```
 
-Usage with piping input and output:
+Usage with piping input and output (for use within the NodeJS app):
 
 ```javascript
-    var gs = require( 'gs' ),
+    var gs = require( 'node-gs' ),
         fs = require( 'fs' ),
         input = fs.readFileSync( '/tmp/' + fileName );
 
@@ -98,6 +92,8 @@ array of include paths
 ## Events
 
 ```javascript
+    var gs = require( 'node-gs' );
+
     gs( inputFile )
         .output( outputFile )
         .on( 'pages', function ( from, to ) {
