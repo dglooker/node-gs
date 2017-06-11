@@ -1,31 +1,33 @@
 {
-  "name": "gs",
-  "description": "Provide access to ghostscript",
-  "version": "0.0.2",
-  "author": "Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
-  "contributors": [
-    "Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
-    "Leonid Suprun <leonid@suprun.pw> (http://github.com/devsli)"
-  ],
-  "bugs" : {
-    "url" : "http://github.com/spreecode/node-gs/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/spreecode/node-gs.git"
-  },
-  "scripts": {
-    "test": "make test"
-  },
-  "devDependencies": {
-    "mocha": "*"
-  },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
-  "contributors": [
-  ]
+	"name": "node-gs",
+	"description": "NodeJS wrapper for gs (ghostscript)",
+	"version": "0.1.0",
+	"author": "Miroslav Hibler <mhibler@gmail.com> (http://github.com/MiroHibler)",
+	"contributors": [
+		"Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
+		"Miroslav Hibler <mhibler@gmail.com> (http://github.com/MiroHibler)"
+	],
+	"bugs": {
+		"url": "http://github.com/MiroHibler/node-gs/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/MiroHibler/node-gs.git"
+	},
+	"scripts": {
+		"test"      : "make test",
+		"testflight": "npm install && mocha ./tests/gs.js --reporter landing"
+	},
+	"devDependencies": {
+		"mocha": "*"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "http://miro.mit-license.org"
+		}
+	],
+	"license" : "SEE LICENSE IN http://miro.mit-license.org",
+	"contributors": [
+	]
 }

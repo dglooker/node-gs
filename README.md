@@ -1,72 +1,119 @@
 node-gs
 =====
 
-NodeJS wrapper for `GhostScript` with the ability to set executable path in order to use with services like `AWS Lambda`.
+NodeJS wrapper for `gs` (GhostScript).
 
 Installation
 =====
-`npm install https://github.com/sina-masnadi/node-gs/tarball/master`
+
+```sh
+npm install https://github.com/MiroHibler/node-gs/tarball/master
+```
 
 or
 
+```javascript
     "dependencies": {
-        "gs": "https://github.com/sina-masnadi/node-gs/tarball/master"
+        "gs": "https://github.com/MiroHibler/node-gs/tarball/master"
     }
+```
 
 Usage
 =====
-To set the executable path you can use:
-`executablePath('ghostscript/bin/./gs')`
-
-A compiled version of GhostScript (v9.20) for AWS Lambda can be find here:
-https://github.com/sina-masnadi/lambda-ghostscript
-
 
 Sample usage:
 
-    var gs = require('gs');
+```javascript
+    var gs = require( 'gs' );
+
     gs()
         .batch()
         .nopause()
-        .option('-r' + 50 * 2)
-        .option('-dDownScaleFactor=2')
-        .executablePath('ghostscript/bin/./gs')
-        .device('png16m')
-        .output('/tmp/' + fileName + '-%d.png')
-        .input('/tmp/' + fileName)
-        .exec(function (err, stdout, stderr) {
-            if (!err) {
-               // no error
+        .option( '-r' + 50 * 2 )
+        .option( '-dDownScaleFactor=2' )
+        .device( 'png16m' )
+        .input( '/tmp/' + fileName )
+		.output( '/tmp/' + fileName + '-%d.png' )
+        // optional:
+        .executablePath( 'ghostscript/bin/./gs' )
+        .exec( function ( error, stdout, stderr ) {
+            if ( error ) {
+                // ¯\_(ツ)_/¯
             } else {
-               // handle errors
+                // ( ͡° ͜ʖ ͡°)
             }
         });
+```
+
+Usage with piping input and output:
+
+```javascript
+    var gs = require( 'gs' ),
+        fs = require( 'fs' ),
+        input = fs.readFileSync( '/tmp/' + fileName );
+
+    if ( input ) {
+        gs()
+            .option( '-r' + 50 * 2 )
+            .option( '-dDownScaleFactor=2' )
+            .device( 'png16m' )
+            .exec( input, function ( error, stdout, stderr ) {
+                if ( error ) {
+                    // ¯\_(ツ)_/¯
+                } else {
+                    // ( ͡° ͜ʖ ͡°)
+                }
+            });
+    }
+```
 
 # API
 
-* `include` - set path to `gs_init.ps` file (portable Ghostscript)
-* `batch`
-* `nopause`
+* `batch` - set batch option
+* `command` - tell gs to interpret PostScript code
+* `currentDirectory` / `p` - tell gs to use current directory for libraries first
+* `diskfonts` - set diskfonts option
+* `define` - set definition with value
 * `device` - device - defaults to `txtwrite`
+* `executablePath` - path to the Ghostscript executable files (example: `ghostscript/bin/./gs`)
+* `include` - set path to `gs_init.ps` file (portable Ghostscript)
+array of include paths
+* `input` - file or data for stdin (when invoked with `gs( '-' )`)
+* `nobind` - set nobind option
+* `nocache` - set nocache option
+* `nodisplay` - set nodisplay option
+* `nopause` - set nopause option
+* `option` - add any option that is not provided through the methods
 * `output` - file - defaults to `-` which represents stdout
-* `option` - you can add any options that is not provided through the functions to the command
-* `input` - file
-* `executablePath` - path to the Ghostscript executable files (example: ghostscript/bin/./). This can be useful for Lambda functions.
+* `page` - number - tell gs to process single page
+* `pagecount` - return number of pages
+* `pages` - numbers - tell gs to process page range
+* `papersize` - set the paper size
+* `quiet` / `q` - tell gs to be quiet
+* `reset` - reset gs to initial state
+* `resolution` / `res` / `r` - set device resolution
+* `safer` - set gs to run in safe mode
 * `exec` - callback
 
 ## Events
 
-# License
-
 ```javascript
-    gs(inputFile)
-      .output(outputFile)
-      .on('page', function(page) { console.debug('processing page:', page); })
-      .exec(function(err, data) {
-        console.log(data.toString());
-      });
+    gs( inputFile )
+        .output( outputFile )
+        .on( 'pages', function ( from, to ) {
+            console.debug( '[sg] Processing pages ' + from + '-' * to );
+        })
+        .on( 'page', function ( page ) {
+            console.debug( '[sg] Processing page:', page );
+        })
+        .on( 'data', function ( data ) {
+            console.log( '[sg] Data:', data.toString() );
+        })
+        .exec( function ( err, data ) {
+            console.log( '[sg] Data:', data.toString() );
+        });
 ```
 
 # License
 
-MIT - http://ncb000gt.mit-license.org/
+MIT - http://miro.mit-license.org/
