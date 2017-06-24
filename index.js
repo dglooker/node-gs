@@ -173,7 +173,7 @@ gs.prototype.exec = function ( inputData, callback ) {
 	}
 
 	var self = this,
-		executable = ( self._executablePath ) ? _executablePath : 'gs',
+		executable = ( self._executablePath ) ? self._executablePath : 'gs',
 		files = [].concat( self._input ),
 		args = this.options.concat( files ),
 		gsData = [],
