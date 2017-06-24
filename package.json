@@ -1,7 +1,7 @@
 {
 	"name": "node-gs",
 	"description": "NodeJS wrapper for gs (ghostscript)",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"author": "Miroslav Hibler <mhibler@gmail.com> (http://github.com/MiroHibler)",
 	"contributors": [
 		"Nick Campbell <nicholas.j.campbell@gmail.com> (http://github.com/ncb000gt)",
