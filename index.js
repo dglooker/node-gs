@@ -196,6 +196,7 @@ gs.prototype.exec = function ( inputData, callback ) {
 		proc = spawn( executable, args );
 	}
 
+	proc.on('error', _callback);
 	proc.stdin.on( 'error', _callback );
 	proc.stdout.on( 'error', _callback );
 
