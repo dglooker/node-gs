@@ -19,7 +19,7 @@ gs.prototype.__proto__ = EventEmitter.prototype;
 
 gs.prototype.debug = function () {
 	this.debug = !!this.debug
-	return this.debug;
+	return this;
 };
 
 gs.prototype.batch = function () {
