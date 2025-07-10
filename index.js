@@ -17,6 +17,11 @@ var gs = function gs ( inputFile ) {
 
 gs.prototype.__proto__ = EventEmitter.prototype;
 
+gs.prototype.debug = function () {
+	this.debug = !!this.debug
+	return this.debug;
+};
+
 gs.prototype.batch = function () {
 	return this.define( 'BATCH' );
 };
@@ -179,6 +184,10 @@ gs.prototype.exec = function ( inputData, callback ) {
 		gsData = [],
 		totalBytes = 0,
 		proc;
+
+	if (this.debug) {
+		console.log(executable, args.map(a=>`'${a}'`).join(' ');
+	}
 
 	if ( self._input === '-' ) {
 		proc = spawn( executable, args, {
