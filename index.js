@@ -186,7 +186,7 @@ gs.prototype.exec = function ( inputData, callback ) {
 		proc;
 
 	if (this.debug) {
-		console.log(executable, args.map(a=>`'${a}'`).join(' ');
+		console.log(executable, args.map(a=>`'${a}'`).join(' '));
 	}
 
 	if ( self._input === '-' ) {
